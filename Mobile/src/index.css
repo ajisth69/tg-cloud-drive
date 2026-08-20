@@ -1,0 +1,1294 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+html,
+body {
+  min-height: 100%;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+#root {
+  min-height: 100vh;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+
+/* Safe-area insets for notched / gesture-bar devices (native & PWA) */
+/* --safe-area-inset-*: injected by @capacitor/system-bars (env() is
+   broken in WebViews < 140, returns 0). Fallback to env() for web/PWA. */
+@supports (padding: max(0px)) {
+  .safe-top {
+    padding-top: max(0px, var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
+  }
+  .safe-bottom {
+    padding-bottom: max(0px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+  }
+  .safe-left {
+    padding-left: max(0px, var(--safe-area-inset-left, env(safe-area-inset-left, 0px)));
+  }
+  .safe-right {
+    padding-right: max(0px, var(--safe-area-inset-right, env(safe-area-inset-right, 0px)));
+  }
+  .safe-px {
+    padding-left: max(0px, var(--safe-area-inset-left, env(safe-area-inset-left, 0px)));
+    padding-right: max(0px, var(--safe-area-inset-right, env(safe-area-inset-right, 0px)));
+  }
+}
+
+:root {
+  /* ═══════════════════════════════════════════════════
+     Material Design 3 — AnymeX-style indigo seed (#3F51B5)
+     Light Theme Color Roles
+     ═══════════════════════════════════════════════════ */
+
+  /* Primary */
+  --md-primary: #4355b9;
+  --md-on-primary: #ffffff;
+  --md-primary-container: #dee0ff;
+  --md-on-primary-container: #000e61;
+
+  /* Secondary */
+  --md-secondary: #5a5d72;
+  --md-on-secondary: #ffffff;
+  --md-secondary-container: #dee1f9;
+  --md-on-secondary-container: #17182b;
+
+  /* Tertiary */
+  --md-tertiary: #77536d;
+  --md-on-tertiary: #ffffff;
+  --md-tertiary-container: #ffd7f2;
+  --md-on-tertiary-container: #2d1128;
+
+  /* Error */
+  --md-error: #ba1a1a;
+  --md-on-error: #ffffff;
+  --md-error-container: #ffdad6;
+  --md-on-error-container: #410002;
+
+  /* Surface hierarchy */
+  --md-surface: #fbf8ff;
+  --md-on-surface: #1a1b21;
+  --md-surface-variant: #e2e1ec;
+  --md-on-surface-variant: #45465a;
+  --md-surface-container-lowest: #ffffff;
+  --md-surface-container-low: #f5f2fa;
+  --md-surface-container: #efedf6;
+  --md-surface-container-high: #e9e7f0;
+  --md-surface-container-highest: #e4e1ea;
+  --md-surface-dim: #dddae3;
+  --md-surface-bright: #fbf8ff;
+  --md-inverse-surface: #2f3038;
+  --md-inverse-on-surface: #f1eff8;
+  --md-inverse-primary: #bac3ff;
+
+  /* Outline */
+  --md-outline: #75778c;
+  --md-outline-variant: #c5c5d9;
+
+  /* Scrim */
+  --md-scrim: rgba(0, 0, 0, 0.32);
+
+  /* Semantic tokens (success/warning preserved) */
+  --color-success: #1b6d2f;
+  --color-on-success: #ffffff;
+  --color-success-container: #a3f5a6;
+  --color-on-success-container: #002108;
+  --color-warning: #7c5800;
+  --color-on-warning: #ffffff;
+  --color-warning-container: #ffdea4;
+  --color-on-warning-container: #271900;
+
+  /* ── Backward-compatible aliases ── */
+  --color-surface-50: var(--md-surface);
+  --color-surface-100: var(--md-surface-container-lowest);
+  --color-surface-200: var(--md-surface-container-low);
+  --color-surface-300: var(--md-outline-variant);
+  --color-surface-400: var(--md-outline);
+  --color-surface-500: var(--md-on-surface-variant);
+  --color-surface-600: var(--md-on-surface-variant);
+  --color-surface-700: #303136;
+  --color-surface-800: #1a1b21;
+  --color-surface-900: var(--md-on-surface);
+
+  --color-brand-400: #8a9ef5;
+  --color-brand-500: var(--md-primary);
+  --color-brand-600: #33408f;
+
+  --color-accent-400: #dba7cd;
+  --color-accent-500: var(--md-tertiary);
+  --color-accent-600: #5c3b54;
+
+  --color-danger: var(--md-error);
+
+  --font-sans: "Poppins", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+
+  /* Card / Glass tokens */
+  --glass-bg: var(--md-surface-container-lowest);
+  --glass-border: var(--md-outline-variant);
+  --glass-hover-bg: var(--md-surface-container-low);
+  --glass-hover-border: var(--md-outline);
+  
+  /* M3 Elevation shadows (levels 1-5) */
+  --md-elevation-1: 0 1px 3px 1px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --md-elevation-2: 0 2px 6px 2px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --md-elevation-3: 0 4px 8px 3px rgba(0,0,0,0.15), 0 1px 3px 0 rgba(0,0,0,0.3);
+  --md-elevation-4: 0 6px 10px 4px rgba(0,0,0,0.15), 0 2px 3px 0 rgba(0,0,0,0.3);
+  --md-elevation-5: 0 8px 12px 6px rgba(0,0,0,0.15), 0 4px 4px 0 rgba(0,0,0,0.3);
+  --shadow-premium: var(--md-elevation-1);
+  --shadow-premium-lg: var(--md-elevation-3);
+
+  /* M3 Shape scale */
+  --md-shape-none: 0px;
+  --md-shape-xs: 4px;
+  --md-shape-sm: 8px;
+  --md-shape-md: 12px;
+  --md-shape-lg: 16px;
+  --md-shape-xl: 28px;
+  --md-shape-full: 9999px;
+
+  /* Preview modal tokens */
+  --preview-bg: rgba(0, 0, 0, 0.92);
+  --preview-controls-bg: rgba(0, 0, 0, 0.7);
+  --preview-controls-hover: rgba(255, 255, 255, 0.12);
+  --preview-seek-track: rgba(255, 255, 255, 0.2);
+  --preview-seek-fill: var(--md-primary);
+  --preview-seek-thumb: #ffffff;
+}
+
+.dark {
+  /* ═══════════════════════════════════════════════════
+     Material Design 3 — AnymeX-style indigo seed (#3F51B5)
+     Dark Theme Color Roles
+     ═══════════════════════════════════════════════════ */
+
+  /* Primary */
+  --md-primary: #bac3ff;
+  --md-on-primary: #10248e;
+  --md-primary-container: #2a3dab;
+  --md-on-primary-container: #dee0ff;
+
+  /* Secondary */
+  --md-secondary: #c2c5dd;
+  --md-on-secondary: #2c2e42;
+  --md-secondary-container: #42455a;
+  --md-on-secondary-container: #dee1f9;
+
+  /* Tertiary */
+  --md-tertiary: #e3bad6;
+  --md-on-tertiary: #45263e;
+  --md-tertiary-container: #5e3c55;
+  --md-on-tertiary-container: #ffd7f2;
+
+  /* Error */
+  --md-error: #ffb4ab;
+  --md-on-error: #690005;
+  --md-error-container: #93000a;
+  --md-on-error-container: #ffdad6;
+
+  /* Surface hierarchy */
+  --md-surface: #121318;
+  --md-on-surface: #e4e1ea;
+  --md-surface-variant: #45465a;
+  --md-on-surface-variant: #c5c5d9;
+  --md-surface-container-lowest: #0d0e13;
+  --md-surface-container-low: #1a1b21;
+  --md-surface-container: #1f1f26;
+  --md-surface-container-high: #292a31;
+  --md-surface-container-highest: #34343b;
+  --md-surface-dim: #121318;
+  --md-surface-bright: #393942;
+  --md-inverse-surface: #e4e1ea;
+  --md-inverse-on-surface: #2f3038;
+  --md-inverse-primary: #4355b9;
+
+  /* Outline */
+  --md-outline: #8f90a4;
+  --md-outline-variant: #45465a;
+
+  /* Scrim */
+  --md-scrim: rgba(0, 0, 0, 0.32);
+
+  /* Semantic dark tokens */
+  --color-success: #88d98a;
+  --color-on-success: #003913;
+  --color-success-container: #005321;
+  --color-on-success-container: #a3f5a6;
+  --color-warning: #f5bf4a;
+  --color-on-warning: #422c00;
+  --color-warning-container: #5e4100;
+  --color-on-warning-container: #ffdea4;
+
+  /* ── Backward-compatible aliases ── */
+  --color-surface-50: var(--md-surface);
+  --color-surface-100: var(--md-surface-container-lowest);
+  --color-surface-200: var(--md-surface-container-low);
+  --color-surface-300: var(--md-outline-variant);
+  --color-surface-400: var(--md-outline);
+  --color-surface-500: var(--md-on-surface-variant);
+  --color-surface-600: var(--md-on-surface-variant);
+  --color-surface-700: #c5c5d9;
+  --color-surface-800: #e4e1ea;
+  --color-surface-900: var(--md-on-surface);
+
+  --color-brand-400: #bac3ff;
+  --color-brand-500: var(--md-primary);
+  --color-brand-600: #9aa7f2;
+
+  --color-accent-400: #e3bad6;
+  --color-accent-500: var(--md-tertiary);
+  --color-accent-600: #cba6c0;
+
+  --color-danger: var(--md-error);
+
+  --glass-bg: var(--md-surface-container-low);
+  --glass-border: var(--md-outline-variant);
+  --glass-hover-bg: var(--md-surface-container);
+  --glass-hover-border: var(--md-outline);
+
+  --md-elevation-1: 0 1px 3px 1px rgba(0,0,0,0.30), 0 1px 2px 0 rgba(0,0,0,0.50);
+  --md-elevation-2: 0 2px 6px 2px rgba(0,0,0,0.30), 0 1px 2px 0 rgba(0,0,0,0.50);
+  --md-elevation-3: 0 4px 8px 3px rgba(0,0,0,0.30), 0 1px 3px 0 rgba(0,0,0,0.50);
+  --md-elevation-4: 0 6px 10px 4px rgba(0,0,0,0.30), 0 2px 3px 0 rgba(0,0,0,0.50);
+  --md-elevation-5: 0 8px 12px 6px rgba(0,0,0,0.30), 0 4px 4px 0 rgba(0,0,0,0.50);
+  --shadow-premium: var(--md-elevation-1);
+  --shadow-premium-lg: var(--md-elevation-3);
+}
+
+@theme {
+  --color-surface-50: var(--color-surface-50);
+  --color-surface-100: var(--color-surface-100);
+  --color-surface-200: var(--color-surface-200);
+  --color-surface-300: var(--color-surface-300);
+  --color-surface-400: var(--color-surface-400);
+  --color-surface-500: var(--color-surface-500);
+  --color-surface-600: var(--color-surface-600);
+  --color-surface-700: var(--color-surface-700);
+  --color-surface-800: var(--color-surface-800);
+  --color-surface-900: var(--color-surface-900);
+
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+
+  --color-accent-400: var(--color-accent-400);
+  --color-accent-500: var(--color-accent-500);
+  --color-accent-600: var(--color-accent-600);
+
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+
+  /* M3 Role tokens for direct Tailwind usage */
+  --color-md-primary: var(--md-primary);
+  --color-md-on-primary: var(--md-on-primary);
+  --color-md-primary-container: var(--md-primary-container);
+  --color-md-on-primary-container: var(--md-on-primary-container);
+  --color-md-secondary: var(--md-secondary);
+  --color-md-on-secondary: var(--md-on-secondary);
+  --color-md-secondary-container: var(--md-secondary-container);
+  --color-md-on-secondary-container: var(--md-on-secondary-container);
+  --color-md-tertiary: var(--md-tertiary);
+  --color-md-on-tertiary: var(--md-on-tertiary);
+  --color-md-tertiary-container: var(--md-tertiary-container);
+  --color-md-on-tertiary-container: var(--md-on-tertiary-container);
+  --color-md-error: var(--md-error);
+  --color-md-on-error: var(--md-on-error);
+  --color-md-error-container: var(--md-error-container);
+  --color-md-on-error-container: var(--md-on-error-container);
+  --color-md-surface: var(--md-surface);
+  --color-md-on-surface: var(--md-on-surface);
+  --color-md-surface-variant: var(--md-surface-variant);
+  --color-md-on-surface-variant: var(--md-on-surface-variant);
+  --color-md-outline: var(--md-outline);
+  --color-md-outline-variant: var(--md-outline-variant);
+  --color-md-surface-container-lowest: var(--md-surface-container-lowest);
+  --color-md-surface-container-low: var(--md-surface-container-low);
+  --color-md-surface-container: var(--md-surface-container);
+  --color-md-surface-container-high: var(--md-surface-container-high);
+  --color-md-surface-container-highest: var(--md-surface-container-highest);
+  --color-md-inverse-surface: var(--md-inverse-surface);
+  --color-md-inverse-on-surface: var(--md-inverse-on-surface);
+  --color-md-inverse-primary: var(--md-inverse-primary);
+
+  --color-success-container: var(--color-success-container);
+  --color-on-success-container: var(--color-on-success-container);
+  --color-warning-container: var(--color-warning-container);
+  --color-on-warning-container: var(--color-on-warning-container);
+
+  --font-sans: var(--font-sans);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+    transition: background-color 0.3s cubic-bezier(0.2, 0, 0, 1), border-color 0.3s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  body {
+    background-color: var(--md-surface);
+    color: var(--md-on-surface);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background-color 0.3s cubic-bezier(0.2, 0, 0, 1), color 0.3s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--md-outline-variant);
+    border-radius: 9999px;
+    border: 1px solid transparent;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--md-surface-container-highest);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--md-outline);
+  }
+
+  /* Focus-visible accessibility rings — M3 uses 3dp focus indicator */
+  :focus-visible {
+    outline: 3px solid var(--md-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 3px solid var(--md-primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-premium);
+  }
+
+  .glass-hover {
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .glass-hover:hover {
+    background: var(--glass-hover-bg);
+    border-color: var(--glass-hover-border);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-premium-lg);
+  }
+
+  .glow-brand {
+    position: relative;
+  }
+  
+  .glow-brand::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, var(--md-primary), var(--md-tertiary));
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0.08;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  
+  .glow-brand-pulse {
+    animation: glow-pulse 3s infinite ease-in-out;
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px color-mix(in srgb, var(--md-tertiary) 6%, transparent);
+  }
+
+  .gradient-brand {
+    background: linear-gradient(135deg, var(--md-primary) 0%, var(--md-tertiary) 100%);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--md-primary) 0%, var(--md-tertiary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ─── Standard Animations (M3 motion: emphasized decelerate) ─── */
+
+  .animate-float {
+    animation: float 5s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.4s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
+  .animate-slide-right {
+    animation: slide-right 0.4s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
+  /* ─── M3 Emphasized Motion ─── */
+
+  .animate-spring-in {
+    animation: spring-scale-in 0.4s cubic-bezier(0.05, 0.7, 0.1, 1) forwards;
+  }
+
+  .animate-spring-out {
+    animation: spring-scale-out 0.25s cubic-bezier(0.3, 0, 0.8, 0.15) forwards;
+  }
+
+  .animate-spring-slide-up {
+    animation: spring-slide-up 0.4s cubic-bezier(0.05, 0.7, 0.1, 1) forwards;
+  }
+
+  .animate-spring-bounce {
+    animation: spring-bounce 0.5s cubic-bezier(0.05, 0.7, 0.1, 1) forwards;
+  }
+
+  /* ─── Preview Modal Animations ─── */
+
+  .animate-preview-enter {
+    animation: preview-enter 0.35s cubic-bezier(0.05, 0.7, 0.1, 1) forwards;
+  }
+
+  .animate-preview-exit {
+    animation: preview-exit 0.25s cubic-bezier(0.3, 0, 0.8, 0.15) forwards;
+  }
+
+  .animate-backdrop-enter {
+    animation: backdrop-enter 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+
+  .animate-backdrop-exit {
+    animation: backdrop-exit 0.2s ease-out forwards;
+  }
+
+  .animate-controls-show {
+    animation: controls-fade-in 0.2s ease-out forwards;
+  }
+
+  .animate-controls-hide {
+    animation: controls-fade-out 0.35s ease-in forwards;
+  }
+
+  /* ─── Shimmer / Loading ─── */
+
+  .shimmer {
+    background: linear-gradient(90deg, 
+      rgba(255,255,255,0) 0%, 
+      rgba(255,255,255,0.06) 50%, 
+      rgba(255,255,255,0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-swipe 2s infinite linear;
+  }
+  
+  .dark .shimmer {
+    background: linear-gradient(90deg, 
+      rgba(0,0,0,0) 0%, 
+      rgba(255,255,255,0.03) 50%, 
+      rgba(0,0,0,0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer-swipe 2s infinite linear;
+  }
+
+  .animate-progress-shine {
+    background-size: 200% 100%;
+    animation: progress-shine 2s ease-in-out infinite;
+  }
+
+  .animate-progress-indeterminate {
+    animation: progress-indeterminate 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  /* ─── Preview-Specific Utilities ─── */
+
+  /* Viewer container: absolute black, full screen. padding-bottom with
+     env(safe-area-inset-bottom) compensates for the viewport expansion when
+     entering immersive mode: the WebView grows ~24px due to the gesture bar
+     and flexbox re-centers the content downward; this padding keeps the
+     exact center in both states (env=0 with opaque bars). */
+  .preview-modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    background-color: #000000;
+  }
+
+  /* In landscape (mobile) the preview is edge-to-edge: no margins or
+     rounded corners from the sm: breakpoint. */
+  @media (max-height: 560px) {
+    .preview-card {
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      max-height: none !important;
+      border-radius: 0 !important;
+    }
+  }
+
+  .preview-overlay {
+    background: var(--preview-bg);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  .preview-controls-bar {
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+    /* In immersive mode the viewer is edge-to-edge: the gesture zone sits
+       below the controls; we raise the content above the safe-area. */
+    padding-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  }
+
+  .preview-controls-top {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
+    padding-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+    padding-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+  }
+
+  /* ─── Custom Range Slider (for video/audio seek, volume) ─── */
+
+  .range-native {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .range-native::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--preview-seek-track);
+    transition: height 0.15s ease;
+  }
+
+  .range-native:hover::-webkit-slider-runnable-track {
+    height: 6px;
+  }
+
+  .range-native::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--preview-seek-thumb);
+    border: none;
+    margin-top: -5px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    transition: transform 0.15s cubic-bezier(0.05, 0.7, 0.1, 1), box-shadow 0.15s ease;
+    opacity: 0;
+  }
+
+  .range-native:hover::-webkit-slider-thumb,
+  .range-native:active::-webkit-slider-thumb {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .range-native:active::-webkit-slider-thumb {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .range-native::-moz-range-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--preview-seek-track);
+    border: none;
+    transition: height 0.15s ease;
+  }
+
+  .range-native:hover::-moz-range-track {
+    height: 6px;
+  }
+
+  .range-native::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--preview-seek-thumb);
+    border: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    transition: transform 0.15s cubic-bezier(0.05, 0.7, 0.1, 1);
+  }
+
+  .range-native:active::-moz-range-thumb {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  /* Volume-specific smaller slider */
+  .range-volume::-webkit-slider-runnable-track {
+    height: 3px;
+  }
+
+  .range-volume:hover::-webkit-slider-runnable-track {
+    height: 4px;
+  }
+
+  .range-volume::-webkit-slider-thumb {
+    width: 12px;
+    height: 12px;
+    margin-top: -4.5px;
+    opacity: 1;
+  }
+
+  .range-volume::-moz-range-track {
+    height: 3px;
+  }
+
+  .range-volume:hover::-moz-range-track {
+    height: 4px;
+  }
+
+  .range-volume::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* ─── Image zoom cursor ─── */
+
+  .cursor-zoom-in {
+    cursor: zoom-in;
+  }
+
+  .cursor-zoom-out {
+    cursor: zoom-out;
+  }
+
+  .cursor-grab {
+    cursor: grab;
+  }
+
+  .cursor-grabbing {
+    cursor: grabbing;
+  }
+
+  /* ─── File type color strips (M3 tonal colors) ─── */
+  .file-strip-image { border-left: 3px solid #1b6d2f; }
+  .file-strip-video { border-left: 3px solid #6750a4; }
+  .file-strip-audio { border-left: 3px solid #006874; }
+  .file-strip-document { border-left: 3px solid #005cbb; }
+  .file-strip-archive { border-left: 3px solid #7c5800; }
+  .file-strip-code { border-left: 3px solid #44474e; }
+  .file-strip-other { border-left: 3px solid #74777f; }
+
+  /* ─── M3 State Layer utility ─── */
+  .state-layer-hover {
+    position: relative;
+  }
+  .state-layer-hover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--md-primary);
+    opacity: 0;
+    transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+    pointer-events: none;
+  }
+  .state-layer-hover:hover::before {
+    opacity: 0.08;
+  }
+  .state-layer-hover:active::before {
+    opacity: 0.12;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   KEYFRAMES (M3 emphasized easing)
+   ══════════════════════════════════════════════════════ */
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0.3deg);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(0.99);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s cubic-bezier(0.05, 0.7, 0.1, 1) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.3s cubic-bezier(0.05, 0.7, 0.1, 1) forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 16px color-mix(in srgb, var(--md-primary) 3%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 28px color-mix(in srgb, var(--md-primary) 8%, transparent);
+  }
+}
+
+@keyframes shimmer-swipe {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ─── M3 Emphasized Motion Keyframes ─── */
+
+@keyframes spring-scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  60% {
+    transform: scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes spring-scale-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes spring-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  70% {
+    transform: translateY(-2px) scale(1.002);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes spring-bounce {
+  0% {
+    transform: scale(0.92);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* ─── Preview Modal Keyframes ─── */
+
+@keyframes preview-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes preview-exit {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+}
+
+@keyframes backdrop-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdrop-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes controls-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes controls-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* ─── Progress Bar Keyframes ─── */
+
+@keyframes progress-shine {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    left: -40%;
+    width: 40%;
+  }
+  50% {
+    width: 60%;
+  }
+  100% {
+    left: 100%;
+    width: 40%;
+  }
+}
+
+/* ─── Dots Loading ─── */
+
+@keyframes dots-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ─── Gradient Ring Spinner ─── */
+
+@keyframes gradient-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── Ripple Effect ─── */
+
+@keyframes ripple-spread {
+  0% {
+    transform: scale(0);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Drive-style UI — bottom sheets, rows, selection, bottom nav
+   ═══════════════════════════════════════════════════════════════ */
+
+.animate-sheet-enter {
+  animation: sheet-enter 0.35s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+.animate-sheet-exit {
+  animation: sheet-exit 0.22s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes sheet-enter {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes sheet-exit {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
+.animate-search-enter {
+  animation: search-enter 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+@keyframes search-enter {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Drive file row — no hover/:active: :active leaves the highlight stuck
+   after a long press and scroll (WebView touchcancel quirk), looking like
+   a selection that doesn't actually exist. The real selection has its own
+   style (checkbox + top bar). */
+.drive-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 68px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+/* Bottom navigation safe area */
+.bottom-nav-safe {
+  padding-bottom: max(0px, var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   AnymeX-style — ambient gradient, glassmorphism, grain, pill nav
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Ambient scaffold background: indigo-tinted glow,
+   mirroring AnymeX's lightweight gradient overlay */
+.anymex-ambient {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--md-primary) 10%, var(--md-surface)) 0%,
+    color-mix(in srgb, var(--md-primary) 3%, var(--md-surface)) 30%,
+    var(--md-surface) 55%,
+    color-mix(in srgb, var(--md-tertiary) 7%, var(--md-surface)) 85%,
+    color-mix(in srgb, var(--md-primary) 4%, var(--md-surface)) 100%
+  );
+  transition: background 0.4s ease;
+}
+
+/* AnymeX card (solid, no glass) */
+.anymex-glass {
+  background: var(--md-surface-container-low);
+  border: 1px solid color-mix(in srgb, var(--md-outline) 12%, transparent);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.10);
+}
+
+/* Grain texture overlay (like AnymeX grain) */
+.anymex-grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Island dock — AnymeX style: gradient glass, glow, and the label only
+   on the active item (expanded pill with shine) */
+.dock-bar {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--md-surface-container-high) 78%, transparent),
+    color-mix(in srgb, var(--md-surface-container) 62%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--md-outline-variant) 18%, transparent);
+  border-radius: 9999px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  transition: background 0.3s ease;
+}
+
+.dock-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  min-height: 52px;
+  padding: 4px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.dock-item-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  color: color-mix(in srgb, var(--md-on-surface) 62%, transparent);
+  transition:
+    background-color 0.3s cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 0.3s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.dock-item:hover .dock-item-pill {
+  background-color: color-mix(in srgb, var(--md-on-surface) 7%, transparent);
+  color: var(--md-on-surface);
+  transform: translateY(-1px);
+}
+
+.dock-item:active .dock-item-pill {
+  transform: scale(0.92);
+}
+
+.dock-item .dock-item-pill-active,
+.dock-item .dock-item-pill-active:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--md-primary) 88%, white 12%),
+    var(--md-primary)
+  );
+  color: var(--md-on-primary);
+  padding-right: 14px;
+  padding-left: 10px;
+  transform: none;
+}
+
+.dock-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+}
+
+.dock-item-label {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  animation: dock-label-in 0.18s ease-out;
+}
+
+@keyframes dock-label-in {
+  from {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* AnymeX-style search bar (pill, solid, subtle border) */
+.anymex-input {
+  background: var(--md-surface-container-high);
+  border: 0.5px solid color-mix(in srgb, var(--md-on-surface) 8%, transparent);
+  border-radius: 9999px;
+  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.anymex-input:focus-within {
+  outline: none;
+  background: var(--md-surface-container-highest);
+  border-color: color-mix(in srgb, var(--md-primary) 40%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--md-primary) 25%, transparent);
+}
+
+/* AnymeX-style circular icon button (44px circle header action) */
+.anymex-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--md-on-surface) 75%, transparent);
+  background: var(--md-surface-container-highest);
+  border: 0.5px solid color-mix(in srgb, var(--md-on-surface) 8%, transparent);
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.anymex-icon-btn:hover {
+  background: var(--md-surface-container-highest);
+  color: var(--md-on-surface);
+}
+
+.anymex-icon-btn:active {
+  transform: scale(0.92);
+}
+
+/* AnymeX-style filter chip (pill, primary tint) */
+.anymex-chip {
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--md-primary) 10%, var(--md-surface));
+  border: 1px solid color-mix(in srgb, var(--md-primary) 30%, transparent);
+  color: color-mix(in srgb, var(--md-on-surface) 80%, transparent);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.anymex-chip:hover {
+  background: color-mix(in srgb, var(--md-primary) 16%, var(--md-surface));
+}
+
+.anymex-chip-active,
+.anymex-chip[aria-pressed="true"] {
+  background: var(--md-primary);
+  border-color: var(--md-primary);
+  color: var(--md-on-primary);
+}
+
+/* AnymeX-style solid buttons (radius 8px, filled primary) */
+.anymex-btn {
+  background-color: var(--md-primary);
+  color: var(--md-on-primary);
+  border-radius: 8px;
+  transition: filter 0.2s ease, transform 0.1s ease;
+}
+
+.anymex-btn:hover {
+  filter: brightness(1.08);
+}
+
+.anymex-btn:active {
+  transform: scale(0.97);
+}
+
+.anymex-btn-outline {
+  background: transparent;
+  color: var(--md-primary);
+  border: 1.5px solid var(--md-primary);
+  border-radius: 8px;
+}

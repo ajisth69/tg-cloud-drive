@@ -1,0 +1,76 @@
+/* SwiperGallery — touch gallery styles (GPU-friendly). */
+
+.gallery-swiper {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gallery-swiper .swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: transparent;
+  /* NO will-change: the slides don't move individually — only the wrapper
+     transforms during the swipe. Without per-slide layers, the track stays
+     rasterized INSIDE the wrapper texture (1 layer), and the drag is a
+     single composite instead of moving 5 full-screen textures.
+     The wrapper layer is created on its own by its inline transform. */
+}
+
+.gallery-swiper .gallery-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  /* opacity for the loading fade; transform for the Zoom module's zoom
+     animations (Swiper only sets transition-duration inline, so
+     transition-property must include transform or the scale jumps instantly
+     and the zoom exit ends up off-center).
+     NO will-change: the image doesn't move during the swipe; promoting it
+     would create an extra layer per slide (memory pressure on low-end). */
+  transition: opacity 0.1s ease, transform 0.3s ease;
+}
+
+.gallery-swiper .gallery-img.loaded {
+  opacity: 1;
+}
+
+/* The full photo paints instantly (no opacity fade): since its layout is
+   identical to the thumbnail's, the swap is invisible and avoids the track
+   being re-rasterized for 100ms (fade = 6 paint frames).
+   Only the transform transition is kept for the module's zoom. */
+.gallery-swiper .gallery-full {
+  transition: transform 0.3s ease;
+}
+
+/* Two stacked layers (thumbnail below + full photo above that fades in
+   on load): the swipe moves only the thumbnail (640px texture), the full
+   one paints once stabilized. The img box FILLS the slide (inset:0 +
+   width/height 100%; without this an absolutely positioned img stays at
+   its intrinsic size in the top-left corner) and object-fit: contain
+   centers the scaled-up content, just like the full photo (no black bars).
+   NO centering transform: the Zoom module writes the transform inline
+   on the img and any translate of its own would be overwritten (image in
+   the bottom-right corner when zooming out). */
+.gallery-swiper .swiper-zoom-container .gallery-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* The zoom container is NOT promoted: it only transforms during the zoom
+   gesture (one slide at a time). Avoids idle layers per slide.
+   position relative to anchor the two image layers. */
+.gallery-swiper .swiper-zoom-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

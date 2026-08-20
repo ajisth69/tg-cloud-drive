@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.clashdrive.app",
+      "sha256_cert_fingerprints": [
+        "D99BA8070470B78EE308E4D82D64DC058912B5F2A44BB4CD3658C5205949F189"
+      ]
+    }
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "name": "tg-cloud-drive",
+  "private": true,
+  "version": "3.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "android:sync": "npm run build && cap sync android",
+    "android:build": "npm run build && cap sync android && bash scripts/build-android.sh assembleRelease",
+    "android:build:debug": "npm run build && cap sync android && bash scripts/build-android.sh assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/browser": "^8.0.4",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/share": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.3",
+    "@mtcute/client": "^0.6.0",
+    "@mtcute/convert": "^0.31.0",
+    "@mtcute/core": "^0.31.0",
+    "@mtcute/web": "^0.31.0",
+    "jszip": "^3.10.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "streamsaver": "^2.0.6",
+    "swiper": "^14.1.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/jszip": "^3.4.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.8.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.65.0",
+    "vite": "^8.1.5"
+  },
+  "overrides": {
+    "typescript": "$typescript"
+  }
+}

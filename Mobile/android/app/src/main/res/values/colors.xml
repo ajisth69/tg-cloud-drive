@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App brand colors -->
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#3F51B5</color>
+
+    <!-- App surface color (light) — shown behind system bars / before CSS loads -->
+    <color name="window_background">#FBF8FF</color>
+
+    <!-- Window background (anti-flash): the WebView covers the whole window,
+         but the space left free by edge-to-edge would show this color.
+         Never white: in the viewer it would appear as a light strip. -->
+    <color name="window_background_dark">#0A0A0A</color>
+
+    <!-- Dark viewer surface (used by the ImmersiveMode plugin and the window
+         decor while the preview is open) -->
+    <color name="window_background_preview">#0A0A0A</color>
+    <color name="status_bar_preview">#000000</color>
+    <color name="navigation_bar_preview">#000000</color>
+
+    <!-- Bottom navigation dock surface (light) — the gesture bar matches the dock -->
+    <color name="navigation_bar">#EFEDF6</color>
+
+    <!-- Status bar (light) — matches the header surface -->
+    <color name="status_bar">#EFEDF6</color>
+
+    <!-- Light theme: dark system icons over the light ambient background -->
+    <bool name="window_light_status_bar">true</bool>
+    <bool name="window_light_navigation_bar">true</bool>
+</resources>

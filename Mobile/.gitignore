@@ -1,0 +1,43 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Local environment files (never commit credentials)
+.env
+.env.local
+.env.*.local
+
+# TypeScript incremental build info
+.tmp
+*.tsbuildinfo
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Cloudflare Worker deployment file with credentials
+worker.js
+
+# Locks and Zip archives
+bun.lock
+bun.lockb
+*.zip
+
+

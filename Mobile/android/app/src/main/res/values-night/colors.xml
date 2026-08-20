@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App surface color (dark) — shown behind system bars / before CSS loads -->
+    <color name="window_background">#121318</color>
+
+    <!-- Bottom navigation dock surface (dark) — the gesture bar matches the dock -->
+    <color name="navigation_bar">#1F1F26</color>
+
+    <!-- Status bar (dark) — matches the header surface -->
+    <color name="status_bar">#1F1F26</color>
+
+    <!-- Dark theme: light system icons over the dark ambient background -->
+    <bool name="window_light_status_bar">false</bool>
+    <bool name="window_light_navigation_bar">false</bool>
+</resources>

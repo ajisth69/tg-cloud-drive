@@ -1,0 +1,50 @@
+{
+  "name": "Clash Drive — Infinite Cloud Storage",
+  "short_name": "Clash Drive",
+  "description": "Infinite, serverless cloud storage powered by Telegram's MTProto protocol. No backend, runs entirely on your device.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#131316",
+  "theme_color": "#131316",
+  "lang": "en",
+  "categories": ["productivity", "utilities", "storage"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "All Storage",
+      "short_name": "Storage",
+      "description": "Browse all your folders",
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Upload Files",
+      "short_name": "Upload",
+      "description": "Upload new files",
+      "url": "/?action=upload",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
