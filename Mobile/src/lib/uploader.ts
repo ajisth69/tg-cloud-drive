@@ -89,11 +89,14 @@ export async function generateImageThumbnail(file: File | Blob): Promise<Blob | 
   // Scrolling a folder generates many thumbs; decoding the full photo
   // on the main thread (new Image + drawImage) was the lag.
   try {
+    // Only resizeWidth is given so the aspect ratio is preserved: a photo
+    // is never squashed into a square (640x640 both dimensions distorted
+    // the thumbs). from-image applies EXIF rotation, matching how the full
+    // image is displayed by the browser.
     const bitmap = await createImageBitmap(file, {
       resizeWidth: 640,
-      resizeHeight: 640,
       resizeQuality: "medium",
-      imageOrientation: "none",
+      imageOrientation: "from-image",
     });
     try {
       const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);

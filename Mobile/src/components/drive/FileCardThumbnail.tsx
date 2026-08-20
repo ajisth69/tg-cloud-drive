@@ -141,7 +141,10 @@ const thumbnailCache = new Map<string, MemoryThumb>();
 const loadingPromises = new Map<string, Promise<string | null>>();
 
 function thumbCacheKey(file: DriveFile): string {
-  return file.manifest.thumb !== undefined ? `up:${file.manifest.thumb}` : `gen:${file.id}`;
+  // v2: thumbnails generated before v2 squashed photos into 640x640 squares;
+  // the versioned prefix discards those cached blobs (RAM + IndexedDB) so
+  // they regenerate with the correct aspect ratio.
+  return file.manifest.thumb !== undefined ? `up-v2:${file.manifest.thumb}` : `gen-v2:${file.id}`;
 }
 
 function rememberThumb(key: string, blob: Blob, url: string): void {
@@ -191,9 +194,31 @@ async function fetchThumbBlob(
   client: TelegramClient,
   driveConfig: DriveConfig
 ): Promise<Blob | null> {
-const thumbMsgId = file.manifest.thumb;
+  const thumbMsgId = file.manifest.thumb;
 
-  // 1. Uploaded thumbnail stored on Telegram:
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+  const isVideo = ["mp4", "webm", "mkv", "avi", "mov", "3gp", "flv", "ts"].includes(ext);
+  const isImage = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "avif", "heic", "tiff"].includes(ext);
+
+  // Images: always regenerate the thumb from the first chunk instead of
+  // trusting the uploaded thumbnail — older uploads stored a 640x640
+  // squashed square (aspect ratio lost), which showed photos flattened
+  // until the full image loaded. Regenerating keeps the aspect correct
+  // for both new and existing files.
+  if (isImage) {
+    try {
+      const data = await downloadChunkToCache(client, driveConfig, file.id.toString(), file.manifest, 0, Math.min(file.size, 3 * 1024 * 1024));
+      if (data) {
+        const rawBlob = new Blob([Uint8Array.from(data)]);
+        const thumbBlob = await generateAnyThumbnail(rawBlob, file.name);
+        if (thumbBlob) return thumbBlob;
+      }
+    } catch (err) {
+      console.warn("Failed to generate image thumbnail on the fly", file.id, err);
+    }
+  }
+
+  // 1. Uploaded thumbnail stored on Telegram (videos and other files):
   if (thumbMsgId !== undefined) {
     try {
       const data = await downloadThumbnailById(client, driveConfig, thumbMsgId);
@@ -204,10 +229,7 @@ const thumbMsgId = file.manifest.thumb;
     }
   }
 
-  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
   console.warn(`[COVER] ${file.name}: no uploaded thumb, ext=${ext}, size=${file.size}`);
-  const isVideo = ["mp4", "webm", "mkv", "avi", "mov", "3gp", "flv", "ts"].includes(ext);
-  const isImage = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "avif", "heic", "tiff"].includes(ext);
 
   try {
     if (isVideo) {
