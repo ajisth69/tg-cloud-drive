@@ -23,32 +23,52 @@ function applyInsets(insets: SafeInsets) {
  * @capacitor/system-bars does not inject them here, so the layout (header,
  * island dock, FAB, preview) relies on these variables.
  */
+let _syncInsets: (() => void) | null = null;
+
+/** Force an immediate re-sync of safe area insets (e.g. after immersive toggle). */
+export function syncInsets() {
+  if (_syncInsets) _syncInsets();
+}
+
 export function useSafeInsets() {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
     let cancelled = false;
+    let seq = 0;
+    let timer1: ReturnType<typeof setTimeout> | null = null;
+    let timer2: ReturnType<typeof setTimeout> | null = null;
 
     async function sync() {
       const plugin = (Capacitor as any)?.Plugins?.ImmersiveMode;
-      if (!plugin?.getInsets) {
-        console.log("[safeInsets] plugin no disponible");
-        return;
-      }
+      if (!plugin?.getInsets) return;
       try {
+        const mySeq = ++seq;
         const insets: SafeInsets = await plugin.getInsets();
-        console.log("[safeInsets] insets", JSON.stringify(insets));
-        if (!cancelled) applyInsets(insets);
-      } catch (e) {
-        console.log("[safeInsets] error", e);
-      }
+        if (!cancelled && mySeq === seq) applyInsets(insets);
+      } catch {}
     }
 
+    function clearTimers() {
+      if (timer1) { clearTimeout(timer1); timer1 = null; }
+      if (timer2) { clearTimeout(timer2); timer2 = null; }
+    }
+
+    function onResize() {
+      clearTimers();
+      timer1 = setTimeout(() => { timer1 = null; sync(); }, 200);
+      timer2 = setTimeout(() => { timer2 = null; sync(); }, 600);
+    }
+
+    _syncInsets = sync;
     sync();
-    window.addEventListener("resize", sync);
+    window.addEventListener("resize", onResize);
     return () => {
       cancelled = true;
-      window.removeEventListener("resize", sync);
+      seq++;
+      clearTimers();
+      _syncInsets = null;
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 }

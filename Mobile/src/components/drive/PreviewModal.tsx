@@ -11,6 +11,7 @@ import { ActionSheet } from "../ui/ActionSheet";
 import { Modal } from "../ui/Modal";
 import SwiperGallery from "./preview-viewer/SwiperGallery";
 import { Capacitor } from "@capacitor/core";
+import { syncInsets } from "../../hooks/useSafeInsets";
 
 /**
  * Immersive mode: hides the Android StatusBar + NavigationBar with the native
@@ -22,20 +23,23 @@ import { Capacitor } from "@capacitor/core";
  * plugin paints the bars transparent and the decor black BEFORE hiding, so
  * SystemUI never shows the light window_background (#FBF8FF).
  */
+let immersivePending: Promise<void> = Promise.resolve();
+
 async function toggleImmersiveMode(hide: boolean): Promise<void> {
-  try {
-    const plugin = (Capacitor as any)?.Plugins?.ImmersiveMode;
-    console.log(`[immersive] plugin=${plugin ? "available" : "UNDEFINED"} hide=${hide}`);
-    if (hide) {
-      await plugin?.hide?.();
-      console.log("[immersive] hide() resolved");
-    } else {
-      await plugin?.show?.();
-      console.log("[immersive] show() resolved");
-    }
-  } catch (e) {
-    console.warn("Immersive mode not supported on this web platform:", e);
-  }
+  immersivePending = immersivePending.then(async () => {
+    try {
+      const plugin = (Capacitor as any)?.Plugins?.ImmersiveMode;
+      if (hide) {
+        await plugin?.hide?.();
+      } else {
+        await plugin?.show?.();
+      }
+    } catch {}
+    // Re-sync insets after system bars settle
+    setTimeout(syncInsets, 300);
+    setTimeout(syncInsets, 700);
+  });
+  return immersivePending;
 }
 
 /** Viewer open: opaque black bars (they blend with the dark header). */
@@ -1819,7 +1823,11 @@ export function PreviewModal({
   useEffect(() => {
     setPreviewBars();
     return () => {
-      toggleImmersiveMode(false);
+      // Only restore bars if immersive was active; avoid racing with the
+      // immersive toggle effect that may already be calling show().
+      if (immersiveRef.current) {
+        toggleImmersiveMode(false);
+      }
       restoreBars();
     };
   }, []);
