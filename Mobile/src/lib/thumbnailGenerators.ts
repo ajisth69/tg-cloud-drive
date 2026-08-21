@@ -102,8 +102,181 @@ export async function generateXlsxThumbnail(file: File | Blob): Promise<Blob | n
   }
 }
 
+function readLE32(arr: Uint8Array, off: number): number {
+  return (arr[off] | (arr[off + 1] << 8) | (arr[off + 2] << 16) | (arr[off + 3] << 24)) >>> 0;
+}
+
+function readBE32(arr: Uint8Array, off: number): number {
+  return ((arr[off] << 24) | (arr[off + 1] << 16) | (arr[off + 2] << 8) | arr[off + 3]) >>> 0;
+}
+
+async function extractOggCoverArt(bytes: Uint8Array): Promise<Blob | null> {
+
+  // Build array of all Ogg pages: { offset, payload }
+  const pages: { offset: number; payload: Uint8Array }[] = [];
+  let fpos = 0;
+
+  while (fpos < bytes.length - 27) {
+    if (bytes[fpos] !== 0x4f || bytes[fpos + 1] !== 0x67 ||
+        bytes[fpos + 2] !== 0x67 || bytes[fpos + 3] !== 0x53) {
+      fpos++; continue;
+    }
+
+    const segCount = bytes[fpos + 26];
+    const hdrLen = 27 + segCount;
+    if (fpos + hdrLen > bytes.length) break;
+
+    let payloadLen = 0;
+    for (let i = 0; i < segCount; i++) payloadLen += bytes[fpos + 27 + i];
+
+    const pStart = fpos + hdrLen;
+    if (pStart + payloadLen > bytes.length) break;
+
+    pages.push({ offset: fpos, payload: bytes.slice(pStart, pStart + payloadLen) });
+    fpos += hdrLen + payloadLen;
+  }
+
+  // Reassemble logical packets across pages using segment table.
+  // Segment == 255 means packet continues in next segment/page.
+  // Segment < 255 means end of logical packet.
+  const packets: Uint8Array[] = [];
+  let packetChunks: Uint8Array[] = [];
+  let packetLen = 0;
+
+  for (let pi = 0; pi < pages.length; pi++) {
+    const page = pages[pi];
+    const pageOffset = page.offset;
+    const segCount = bytes[pageOffset + 26];
+    const segTable = pageOffset + 27;
+
+    let payloadByte = 0;
+    for (let si = 0; si < segCount; si++) {
+      const segLen = bytes[segTable + si];
+      packetChunks.push(page.payload.slice(payloadByte, payloadByte + segLen));
+      packetLen += segLen;
+      payloadByte += segLen;
+
+      if (segLen < 255) {
+        const merged = new Uint8Array(packetLen);
+        let off = 0;
+        for (const ch of packetChunks) { merged.set(ch, off); off += ch.length; }
+        packets.push(merged);
+        packetChunks = [];
+        packetLen = 0;
+      }
+    }
+  }
+
+  // Find Vorbis Comments / OpusTags packet
+  for (let pi = 0; pi < packets.length; pi++) {
+    const pkt = packets[pi];
+    if (pkt.length < 15) continue;
+
+    let commentData: Uint8Array | null = null;
+
+    // Vorbis: type 0x03 + "vorbis"
+    if (pkt[0] === 0x03 && pkt.slice(1, 7).every((b, i) => b === [0x76, 0x6f, 0x72, 0x62, 0x69, 0x73][i])) {
+      commentData = pkt.slice(7);
+    }
+    // OpusTags
+    else if (pkt.slice(0, 8).every((b, i) => b === [0x4f, 0x70, 0x75, 0x73, 0x54, 0x61, 0x67, 0x73][i])) {
+      commentData = pkt.slice(8);
+    }
+
+    if (!commentData) continue;
+
+    try {
+      let p = 0;
+      const vendorLen = readLE32(commentData, p); p += 4 + vendorLen;
+      if (p + 4 > commentData.length) continue;
+      const commentCount = readLE32(commentData, p); p += 4;
+
+      for (let c = 0; c < commentCount && p + 4 <= commentData.length; c++) {
+        const cLen = readLE32(commentData, p); p += 4;
+        if (p + cLen > commentData.length) break;
+
+        const cb = commentData.slice(p, p + cLen);
+        let eqIdx = -1;
+        for (let e = 0; e < Math.min(cb.length, 256); e++) {
+          if (cb[e] === 0x3d) { eqIdx = e; break; }
+        }
+
+        if (eqIdx > 0) {
+          const key = String.fromCharCode(...cb.slice(0, eqIdx));
+          if (key.toUpperCase() === "METADATA_BLOCK_PICTURE") {
+            const decoder = new TextDecoder("utf-8", { fatal: false });
+            const b64 = decoder.decode(cb.slice(eqIdx + 1)).trim();
+            const bin = atob(b64);
+            const bb = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) bb[i] = bin.charCodeAt(i);
+
+            if (bb.length > 32) {
+              let bp = 4;
+              const mimeLen = readBE32(bb, bp); bp += 4 + mimeLen;
+              const descLen = readBE32(bb, bp); bp += 4 + descLen + 16;
+              const dataLen = readBE32(bb, bp); bp += 4;
+
+              if (bp + dataLen <= bb.length && dataLen > 0) {
+                const img = bb.slice(bp, bp + dataLen);
+                let mime = "image/jpeg";
+                if (img[0] === 0x89 && img[1] === 0x50) mime = "image/png";
+                else if (img[0] === 0x52 && img[1] === 0x49) mime = "image/webp";
+                const res = await generateImageThumbnail(new Blob([img], { type: mime }));
+                if (res) return res;
+              }
+            }
+          }
+        }
+        p += cLen;
+      }
+
+      // If we didn't parse all comments (packet truncated), try to find
+      // METADATA_BLOCK_PICTURE base64 in remaining data + subsequent packets
+      if (p < commentData.length) {
+        const remaining = commentData.slice(p);
+        const decoder = new TextDecoder("utf-8", { fatal: false });
+
+        // Concatenate remaining with up to 200 subsequent packets
+        let contText = decoder.decode(remaining);
+        for (let pi2 = pi + 1; pi2 < Math.min(packets.length, pi + 200); pi2++) {
+          contText += decoder.decode(packets[pi2]);
+        }
+
+        const allB64 = contText.match(/[A-Za-z0-9+/=]{100,}/g);
+        if (allB64) {
+          for (const candidate of allB64) {
+            try {
+              const bin = atob(candidate);
+              const bb = new Uint8Array(bin.length);
+              for (let i = 0; i < bin.length; i++) bb[i] = bin.charCodeAt(i);
+              if (bb.length > 32) {
+                let bp = 4;
+                const mimeLen = readBE32(bb, bp); bp += 4 + mimeLen;
+                const descLen = readBE32(bb, bp); bp += 4 + descLen + 16;
+                const dataLen = readBE32(bb, bp); bp += 4;
+                if (bp + dataLen <= bb.length && dataLen > 0) {
+                  const img = bb.slice(bp, bp + dataLen);
+                  if ((img[0] === 0xff && img[1] === 0xd8) || (img[0] === 0x89 && img[1] === 0x50)) {
+                    let mime = img[0] === 0x89 ? "image/png" : "image/jpeg";
+                    const res = await generateImageThumbnail(new Blob([img], { type: mime }));
+                    if (res) return res;
+                  }
+                }
+              }
+            } catch { /* skip bad candidate */ }
+          }
+        }
+      }
+    } catch (e) {
+      // silent
+    }
+  }
+
+  return null;
+}
+
 /**
- * Helper to extract embedded album artwork from audio files (MP3, M4A, FLAC, etc.).
+ * Helper to extract embedded album artwork from audio files (MP3, M4A, FLAC, Opus, etc.).
  */
 export async function generateAudioThumbnail(file: File | Blob): Promise<Blob | null> {
   try {
@@ -111,6 +284,14 @@ export async function generateAudioThumbnail(file: File | Blob): Promise<Blob | 
     const slice = file.slice(0, bufferSize);
     const arrayBuffer = await slice.arrayBuffer();
     const bytes = new Uint8Array(arrayBuffer);
+
+    // Ogg container (Opus, Vorbis, FLAC-in-Ogg) — need more data for METADATA_BLOCK_PICTURE
+    if (bytes[0] === 0x4f && bytes[1] === 0x67 && bytes[2] === 0x67 && bytes[3] === 0x53) {
+      const bigSlice = file.slice(0, Math.min(file.size, 16 * 1024 * 1024));
+      const bigBuf = await bigSlice.arrayBuffer();
+      const oggResult = await extractOggCoverArt(new Uint8Array(bigBuf));
+      if (oggResult) return oggResult;
+    }
 
     if (bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) {
       const majorVersion = bytes[3];

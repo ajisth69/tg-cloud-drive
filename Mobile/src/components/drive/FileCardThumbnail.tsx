@@ -199,6 +199,7 @@ async function fetchThumbBlob(
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
   const isVideo = ["mp4", "webm", "mkv", "avi", "mov", "3gp", "flv", "ts"].includes(ext);
   const isImage = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "avif", "heic", "tiff"].includes(ext);
+  const isAudio = ["mp3", "wav", "m4a", "flac", "ogg", "aac", "opus", "oga", "dsf", "dff", "wma", "ape", "alac", "mka"].includes(ext);
 
   // Images: always regenerate the thumb from the first chunk instead of
   // trusting the uploaded thumbnail — older uploads stored a 640x640
@@ -236,7 +237,7 @@ async function fetchThumbBlob(
       // Staged head download (faststart) or moov-at-end stitching — see videoCover.ts
       return await generateVideoCover(file, client, driveConfig);
     }
-    const data = await downloadChunkToCache(client, driveConfig, file.id.toString(), file.manifest, 0, Math.min(file.size, 3 * 1024 * 1024));
+    const data = await downloadChunkToCache(client, driveConfig, file.id.toString(), file.manifest, 0, Math.min(file.size, isAudio ? 8 * 1024 * 1024 : 3 * 1024 * 1024));
     if (!data) return null;
     const rawBlob = new Blob([Uint8Array.from(data)]);
     const thumbBlob = await generateAnyThumbnail(rawBlob, file.name);
