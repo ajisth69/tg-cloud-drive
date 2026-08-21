@@ -339,16 +339,20 @@ export function FileCardThumbnail({
   const isExcluded = EXCLUDED_THUMB_EXTS.includes(ext);
   const isVideo = ["mp4", "webm", "mkv", "avi", "mov", "3gp", "flv", "ts"].includes(ext);
   const isImage = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "avif", "heic", "tiff"].includes(ext);
+  const isAudio = ["mp3", "wav", "m4a", "flac", "ogg", "aac", "opus", "oga", "caf", "wma", "dsf", "dff", "ape", "alac", "mka"].includes(ext);
 
   const hasUploadedThumb = file.manifest.thumb !== undefined;
   // Videos: always (only the 8 MB header prefix is fetched).
   // Images: up to 25 MB so large photos also get covers (one-time, persisted).
+  // Audio: up to 50 MB to extract embedded album artwork.
   // Other files: only tiny ones.
   const sizeCap = isVideo
     ? Number.MAX_SAFE_INTEGER
     : isImage
       ? 25 * 1024 * 1024
-      : 3 * 1024 * 1024;
+      : isAudio
+        ? 50 * 1024 * 1024
+        : 3 * 1024 * 1024;
   const canLoadThumb = hasUploadedThumb || (!isExcluded && file.size <= sizeCap);
 
   const cacheKey = hasUploadedThumb ? `up:${file.manifest.thumb!}` : `gen:${fileId}`;

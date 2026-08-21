@@ -322,7 +322,7 @@ export async function generateAnyThumbnail(file: File | Blob, fileName: string):
   const isVideo = ["mp4", "webm", "mkv", "avi", "mov", "3gp", "flv", "ts"].includes(ext);
   const isImage = ["jpg", "jpeg", "png", "webp", "gif", "bmp", "avif", "heic", "tiff"].includes(ext);
   const isEpub = ext === "epub";
-  const isAudio = ["mp3", "flac", "wav", "m4a", "ogg", "aac", "dsf"].includes(ext);
+  const isAudio = ["mp3", "flac", "wav", "m4a", "ogg", "aac", "dsf", "dff", "opus", "oga", "caf", "wma", "ape", "alac", "mka"].includes(ext);
   const isPdf = ext === "pdf";
   const isDocx = ext === "docx" || ext === "doc";
   const isXlsx = ext === "xlsx" || ext === "xls";

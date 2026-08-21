@@ -34,7 +34,8 @@ function FileThumb({ file, client, driveConfig }: { file: DriveFile; client?: Te
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
   const isImage = file.mimeType?.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "gif", "bmp", "avif", "heic", "tiff"].includes(ext);
   const isVideo = ["mp4", "webm", "mkv", "avi", "mov", "3gp", "flv", "ts"].includes(ext);
-  if (isImage || isVideo) {
+  const isAudio = file.mimeType?.startsWith("audio/") || ["mp3", "wav", "m4a", "flac", "ogg", "aac", "opus", "oga", "caf", "wma", "dsf", "dff", "ape", "alac", "mka"].includes(ext);
+  if (isImage || isVideo || isAudio) {
     return (
       <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl overflow-hidden bg-md-surface-container shrink-0">
         <FileCardThumbnail
