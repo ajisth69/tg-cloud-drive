@@ -826,7 +826,14 @@ export function useFiles() {
           id: resMsg.id,
           topicId: favFolderId,
         };
-        const nextFavs = [...favouriteFiles, newFav];
+        const seen = new Set<string>();
+        const nextFavs = favouriteFiles.filter((f) => {
+          const key = f.manifest.chunks.join(",");
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        nextFavs.push(newFav);
         setFavouriteFiles(nextFavs);
         updateCache(() => fileCache.current.set(favFolderId, nextFavs));
         
