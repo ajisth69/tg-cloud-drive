@@ -888,7 +888,7 @@ export function PreviewModal({
   const [videoVolume, setVideoVolume] = useState(1);
   const [videoMuted, setVideoMuted] = useState(false);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [videoLoop, setVideoLoop] = useState(false);
+  const [videoLoop, setVideoLoop] = useState(() => localStorage.getItem("videoLoop") === "true");
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const controlsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1977,6 +1977,10 @@ export function PreviewModal({
   );
   const handleToggleSpeedMenu = useCallback(() => setShowSpeedMenu((s) => !s), []);
   const handleToggleLoop = useCallback(() => setVideoLoop((v) => !v), []);
+
+  useEffect(() => {
+    localStorage.setItem("videoLoop", String(videoLoop));
+  }, [videoLoop]);
   const handleSpeedSelect = useCallback(
     (speed: number) => {
       setPlaybackSpeed(speed);
