@@ -1612,10 +1612,11 @@ export function PreviewModal({
   }, [playbackSpeed, getActiveVideo]);
 
   // Sync loop to the active video (native or OGV)
+  // Re-run on file.id so new video elements inherit the persisted loop setting
   useEffect(() => {
     const v = getActiveVideo();
     if (v) v.loop = videoLoop;
-  }, [videoLoop, getActiveVideo]);
+  }, [videoLoop, getActiveVideo, file.id]);
 
   // Sync audio volume
   useEffect(() => {
@@ -1643,9 +1644,12 @@ export function PreviewModal({
   const handleVideoPlay = useCallback(() => {
     userPausedRef.current = false;
     setVideoPlaying(true);
+    // Ensure loop is applied when video starts (handles first load + Swiper re-renders)
+    const v = ogvPlayerRef.current || videoRef.current;
+    if (v) v.loop = videoLoop;
     resetControlsTimer();
     setBuffering(false);
-  }, [resetControlsTimer]);
+  }, [resetControlsTimer, videoLoop]);
 
   const handleVideoPause = useCallback(() => {
     userPausedRef.current = true;
@@ -1658,16 +1662,16 @@ export function PreviewModal({
 
   const handleVideoLoadedMetadata = useCallback(() => {
     if (gestureActiveRef.current) return;
-    if (videoRef.current) setVideoDuration(videoRef.current.duration);
+    if (videoRef.current) {
+      setVideoDuration(videoRef.current.duration);
+      videoRef.current.loop = videoLoop;
+    }
     setBuffering(false);
-    // First autoplay retry: the src arrives async (url resolves after
-    // navigating), the mount's autoPlay did not fire and the earlier play()
-    // failed silently; with metadata now available it really starts here.
     const v = videoRef.current;
     if (v && v.paused && !userPausedRef.current) {
       v.play().catch(() => {});
     }
-  }, []);
+  }, [videoLoop]);
 
   const handleVideoLoadedData = useCallback(() => {
     if (gestureActiveRef.current) return;
@@ -2030,10 +2034,12 @@ export function PreviewModal({
         container.appendChild(player);
 
         ogvPlayerRef.current = player;
+        player.loop = videoLoop;
 
         player.addEventListener("loadedmetadata", () => {
           if (cancelled) return;
           if (gestureActiveRef.current) return;
+          player.loop = videoLoop;
           setVideoDuration(player.duration || 0);
           setBuffering(false);
           setOgvLoading(false);
